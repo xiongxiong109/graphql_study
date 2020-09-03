@@ -22,6 +22,11 @@ type Query {
     books: [Book]
     authors: [Author]
 }
+# 定义更新类型
+type Mutation {
+    addBook(tittle: String, author: String): Book
+    addAuthor(name: String): Author
+}
 `
 
 // const author = {
@@ -56,6 +61,14 @@ const resolvers = {
     Query: {
         books: () => books,
         authors: () => authors
+    },
+    Mutation: {
+        addAuthor: () => {
+            console.log(name)
+            return {
+                name
+            }
+        }
     }
 }
 
