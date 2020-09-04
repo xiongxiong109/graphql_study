@@ -15,6 +15,7 @@ type Author {
     name: String
     # 作者的书籍
     books: [Book]
+    resstatus: Resstatus
 }
 
 # 定义查询类型
@@ -22,8 +23,20 @@ type Query {
     books: [Book]
     authors: [Author]
 }
+
+type Resstatus {
+    rcode: String
+    rmsg: String
+}
+
+# 定义一个response type, 请求响应基类
+interface ResponseType {
+    resstatus: Resstatus
+}
+
 # 定义更新类型
-type Mutation {
+type Mutation implements ResponseType {
+    resstatus: Resstatus
     addBook(tittle: String, author: String): Book
     addAuthor(name: String): Author
 }
@@ -64,9 +77,14 @@ const resolvers = {
     },
     Mutation: {
         addAuthor: () => {
-            console.log(name)
+            // console.log(name)
             return {
-                name
+                name: '',
+                resstatus: {
+                    rcode: '200',
+                    rmsg: ''
+                }
+                // name
             }
         }
     }
