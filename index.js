@@ -33,7 +33,8 @@ type Query {
 
 const users = [
     {
-        name: 'xx'
+        name: 'xx',
+        gender: 'FEMALE'
     },
     {
         name: 'xxa',
@@ -43,7 +44,8 @@ const users = [
         name: 'aa'
     },
     {
-        name: 'bol'
+        name: 'bol',
+        gender: 'MALE'
     }
 ]
 
@@ -52,12 +54,17 @@ const resolvers = {
     Query: {
         // args为传入的参数
         human: (obj, args, context, info) => {
-            const { fuzzyName, gender } = args
-            if (fuzzyName) {
-                const reg = new RegExp(fuzzyName, 'i')
-                return users.filter(item => reg.test(item.name) && (item.gender == gender || !gender))
-            }
-            return users
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const { fuzzyName, gender } = args
+                    if (fuzzyName) {
+                        const reg = new RegExp(fuzzyName, 'i')
+                        const list = users.filter(item => reg.test(item.name) && (item.gender == gender || !gender))
+                        resolve(list)
+                    }
+                    resolve(users)
+                }, 1e3)
+            })
         }
     }
 }
