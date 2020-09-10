@@ -1,90 +1,46 @@
 const { ApolloServer, gql } = require('apollo-server')
+const { GraphQLScalarType } = require('graphql')
 
 // 定义schema
 const typeDefs = gql`
+# 定义标量Date
+scalar Date
 
-# 定义类型
-type Book {
-    title: String
-    author: Author
+type TimeInfo {
+    createTime: Date
 }
 
-# 定义作者纬度
-type Author {
-    # 作者姓名
-    name: String
-    # 作者的书籍
-    books: [Book]
-    resstatus: Resstatus
-}
-
-# 定义查询类型
 type Query {
-    books: [Book]
-    authors: [Author]
-}
-
-type Resstatus {
-    rcode: String
-    rmsg: String
-}
-
-# 定义一个response type, 请求响应基类
-interface ResponseType {
-    resstatus: Resstatus
-}
-
-# 定义更新类型
-type Mutation implements ResponseType {
-    resstatus: Resstatus
-    addBook(tittle: String, author: String): Book
-    addAuthor(name: String): Author
+    time: TimeInfo
 }
 `
 
-// const author = {
-//     name: 'jqxiong',
-//     books: [ book1, book2 ]
-// }
-
-const book1 = {
-    title: 'asdasd',
-    author: {
-        name: 'jqxiong',
-        books: []
-    }
-}
-
-const books = [
-    book1
-]
-
-const authors = [
-    {
-        name: 'jqxiong',
-        books: [
-            {
-                title: 'asasas'
-            }
-        ]
-    }
-]
-
-const resolvers = {
-    Query: {
-        books: () => books,
-        authors: () => authors
+// 自定义标量Date
+const dd = new GraphQLScalarType({
+    name: 'Date',
+    description: 'Date custom scalar type',
+    parseValue(value) {
+        return new Date(value); // value from the client
     },
-    Mutation: {
-        addAuthor: () => {
-            // console.log(name)
+    serialize(value) {
+        console.log(value)
+        return value.getTime(); // value sent to the client
+    },
+    parseLiteral(ast) {
+        if (ast.kind === Kind.INT) {
+            return parseInt(ast.value, 10); // ast value is always in string format
+        }
+        return null;
+    }
+})
+
+// 具体的实现都在resolver中
+const resolvers = {
+    Date: dd,
+    Query: {
+        time: () => {
             return {
-                name: '',
-                resstatus: {
-                    rcode: '200',
-                    rmsg: ''
-                }
-                // name
+                createTime: new Date()
             }
         }
     }
