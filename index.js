@@ -3,44 +3,34 @@ const { GraphQLScalarType } = require('graphql')
 
 // 定义schema
 const typeDefs = gql`
-# 定义标量Date
-scalar Date
 
-type TimeInfo {
-    createTime: Date
+enum LengthUnit {
+    METER
+}
+
+type StarShip {
+    id: ID!
+    name: String!
+    length(unit: LengthUnit = METER): Float
 }
 
 type Query {
-    time: TimeInfo
+    star: StarShip
 }
 `
 
-// 自定义标量Date
-const dd = new GraphQLScalarType({
-    name: 'Date',
-    description: 'Date custom scalar type',
-    parseValue(value) {
-        return new Date(value); // value from the client
-    },
-    serialize(value) {
-        console.log(value)
-        return value.getTime(); // value sent to the client
-    },
-    parseLiteral(ast) {
-        if (ast.kind === Kind.INT) {
-            return parseInt(ast.value, 10); // ast value is always in string format
-        }
-        return null;
-    }
-})
-
 // 具体的实现都在resolver中
 const resolvers = {
-    Date: dd,
     Query: {
-        time: () => {
+        star: (info) => {
             return {
-                createTime: new Date()
+                id: 12121,
+                name: 'star',
+                // 针对单个字段可以传入不同参数
+                length: (args) => {
+                    console.log(args)
+                    return 12.32432
+                }
             }
         }
     }
