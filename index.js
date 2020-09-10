@@ -3,35 +3,27 @@ const { GraphQLScalarType } = require('graphql')
 
 // 定义schema
 const typeDefs = gql`
-
-enum LengthUnit {
-    METER
+type User {
+    id: Int!
+    name: String
+    age: Int
 }
-
-type StarShip {
-    id: ID!
-    name: String!
-    length(unit: LengthUnit = METER): Float
-}
-
 type Query {
-    star: StarShip
+    users: [User]
 }
 `
 
 // 具体的实现都在resolver中
 const resolvers = {
     Query: {
-        star: (info) => {
-            return {
-                id: 12121,
-                name: 'star',
-                // 针对单个字段可以传入不同参数
-                length: (args) => {
-                    console.log(args)
-                    return 12.32432
+        users: () => {
+            return [
+                {
+                    id: 1,
+                    name: 'aa',
+                    age: 23
                 }
-            }
+            ]
         }
     }
 }
